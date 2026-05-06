@@ -1,25 +1,35 @@
 package iscteiul.ista.blackbattleship;
 
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.FindBy;
-import org.openqa.selenium.support.PageFactory;
 
-// page_url = https://www.jetbrains.com/
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+
 public class MainPage {
-    @FindBy(xpath = "//*[@data-test-marker='Developer Tools']")
-    public WebElement seeDeveloperToolsButton;
-
-    @FindBy(xpath = "//*[@data-test='suggestion-action']")
-    public WebElement findYourToolsButton;
-
-    @FindBy(xpath = "//div[@data-test='main-menu-item' and @data-test-marker = 'Developer Tools']")
-    public WebElement toolsMenu;
-
-    @FindBy(css = "[data-test='site-header-search-action']")
-    public WebElement searchButton;
+    private final WebDriver driver;
 
     public MainPage(WebDriver driver) {
-        PageFactory.initElements(driver, this);
+        this.driver = driver;
+    }
+
+    public void openHomePage() {
+        driver.get("https://www.jetbrains.com/");
+    }
+
+    public void searchFor(String text) {
+        String encodedText = URLEncoder.encode(text, StandardCharsets.UTF_8);
+        driver.get("https://www.jetbrains.com/search/?q=" + encodedText);
+    }
+
+    public void openDeveloperToolsPage() {
+        driver.get("https://www.jetbrains.com/products/");
+    }
+
+    public String getTitle() {
+        return driver.getTitle();
+    }
+
+    public String getCurrentUrl() {
+        return driver.getCurrentUrl();
     }
 }
