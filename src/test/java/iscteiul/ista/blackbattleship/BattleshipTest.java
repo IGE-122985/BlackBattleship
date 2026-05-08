@@ -58,4 +58,23 @@ public class BattleshipTest {
                 "Depois de clicar em Play vs robot, a página esperada não foi carregada."
         );
     }
+
+    @Test
+    public void US04_jogarComUmAmigo() {
+        assertTrue(
+                battleshipPage.isPlayWithFriendAvailable(),
+                "O botão/opção Play with a friend não foi encontrado."
+        );
+
+        battleshipPage.clickPlayWithFriend();
+
+        assertTrue(
+                battleshipPage.getCurrentUrl().toLowerCase().contains("battleship")
+                        || battleshipPage.pageContains("friend")
+                        || battleshipPage.pageContains("Friend")
+                        || battleshipPage.pageContains("Invite")
+                        || battleshipPage.pageContains("invite"),
+                "Depois de clicar em Play with a friend, a página esperada não foi carregada."
+        );
+    }
 }
