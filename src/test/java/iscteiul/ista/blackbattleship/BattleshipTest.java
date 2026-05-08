@@ -41,4 +41,21 @@ public class BattleshipTest {
                 "As regras do jogo não foram encontradas na página."
         );
     }
+
+    @Test
+    public void US03_jogarContraRobot() {
+        assertTrue(
+                battleshipPage.isPlayVsRobotAvailable(),
+                "O botão/opção Play vs robot não foi encontrado."
+        );
+
+        battleshipPage.clickPlayVsRobot();
+
+        assertTrue(
+                battleshipPage.getCurrentUrl().toLowerCase().contains("battleship")
+                        || battleshipPage.pageContains("robot")
+                        || battleshipPage.pageContains("Robot"),
+                "Depois de clicar em Play vs robot, a página esperada não foi carregada."
+        );
+    }
 }
