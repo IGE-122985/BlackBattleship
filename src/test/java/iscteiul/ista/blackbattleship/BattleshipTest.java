@@ -33,4 +33,12 @@ public class BattleshipTest {
                         + " | Título atual: " + battleshipPage.getTitle()
         );
     }
+
+    @Test
+    public void US02_consultarRegrasDoJogo() {
+        assertTrue(
+                battleshipPage.areRulesVisible(),
+                "As regras do jogo não foram encontradas na página."
+        );
+    }
 }
