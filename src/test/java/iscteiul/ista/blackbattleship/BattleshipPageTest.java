@@ -50,5 +50,10 @@ public class BattleshipPageTest {
         assertTrue(page.hasGameInteractionStarted());
     }
 
+    @Test
+    public void UserStoryTest4_criarTorneio() {
+        page.createTournament();
 
+        assertTrue(page.isTournamentPageOrDialogVisible());
+    }
 }
