@@ -43,7 +43,12 @@ public class BattleshipPageTest {
         assertTrue(page.hasGameInteractionStarted());
     }
 
+    @Test
+    public void UserStoryTest3_jogarContraRobot() {
+        page.playVsRobot();
 
+        assertTrue(page.hasGameInteractionStarted());
+    }
 
 
 }
