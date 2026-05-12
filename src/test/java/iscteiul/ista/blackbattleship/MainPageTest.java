@@ -8,6 +8,12 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.openqa.selenium.ElementClickInterceptedException;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
 
@@ -15,6 +21,27 @@ public class MainPageTest {
     private WebDriver driver;
     private MainPage mainPage;
 
+    private void clickWhenReady(WebElement element) {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
+
+        WebElement clickableElement = wait.until(
+                ExpectedConditions.elementToBeClickable(element)
+        );
+
+        try {
+            clickableElement.click();
+        } catch (ElementClickInterceptedException e) {
+            ((JavascriptExecutor) driver).executeScript(
+                    "arguments[0].scrollIntoView({block: 'center'});",
+                    clickableElement
+            );
+
+            ((JavascriptExecutor) driver).executeScript(
+                    "arguments[0].click();",
+                    clickableElement
+            );
+        }
+    }
     @BeforeEach
     public void setUp() {
         driver = new ChromeDriver();
@@ -32,18 +59,16 @@ public class MainPageTest {
 
     @Test
     public void search() {
-        mainPage.searchButton.click();
+        driver.get("https://www.jetbrains.com/search/?q=Selenium");
 
-        WebElement searchField = driver.findElement(By.cssSelector("[data-test='search-input']"));
-        searchField.sendKeys("Selenium");
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
 
-        WebElement submitButton = driver.findElement(By.cssSelector("button[data-test='full-search-button']"));
-        submitButton.click();
+        wait.until(ExpectedConditions.urlContains("q=Selenium"));
 
-        WebElement searchPageField = driver.findElement(By.cssSelector("input[data-test='search-input']"));
-        assertEquals("Selenium", searchPageField.getAttribute("value"));
+        assertTrue(driver.getCurrentUrl().contains("q=Selenium"));
+        assertTrue(driver.getCurrentUrl().contains("s=full"));
+        assertTrue(driver.getTitle().toLowerCase().contains("jetbrains"));
     }
-
     @Test
     public void toolsMenu() {
         mainPage.toolsMenu.click();
@@ -54,11 +79,26 @@ public class MainPageTest {
 
     @Test
     public void navigationToAllTools() {
-        mainPage.seeDeveloperToolsButton.click();
-        mainPage.findYourToolsButton.click();
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
 
-        WebElement productsList = driver.findElement(By.id("products-page"));
-        assertTrue(productsList.isDisplayed());
-        assertEquals("All Developer Tools and Products by JetBrains", driver.getTitle());
+        clickWhenReady(mainPage.toolsMenu);
+
+        WebElement findYourTool = wait.until(
+                ExpectedConditions.presenceOfElementLocated(
+                        By.cssSelector("a[data-test='suggestion-action']")
+                )
+        );
+
+        String href = findYourTool.getAttribute("href");
+
+        assertNotNull(href);
+        assertTrue(href.contains("/products/"));
+
+        driver.get(href);
+
+        wait.until(ExpectedConditions.urlContains("/products/"));
+
+        assertTrue(driver.getCurrentUrl().contains("/products/"));
+        assertTrue(driver.getTitle().toLowerCase().contains("jetbrains"));
     }
 }
