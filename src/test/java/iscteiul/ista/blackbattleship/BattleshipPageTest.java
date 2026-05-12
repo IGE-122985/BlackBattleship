@@ -36,6 +36,13 @@ public class BattleshipPageTest {
         assertTrue(page.areRulesVisible());
     }
 
+    @Test
+    public void UserStoryTest2_jogarComUmAmigo() {
+        page.playWithFriend();
+
+        assertTrue(page.hasGameInteractionStarted());
+    }
+
 
 
 
