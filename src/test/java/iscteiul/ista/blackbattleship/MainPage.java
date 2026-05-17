@@ -6,6 +6,12 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
 public class MainPage {
+    @FindBy(xpath = "//button[contains(., 'Solutions')]")
+    public WebElement solutionsMenu;
+
+    // Este é o link exato que tinhas selecionado no teu print (data-test="banner-link") [cite: 53, 80]
+    @FindBy(css = "[data-test='banner-link']")
+    public WebElement seeDeveloperToolsButton;
     private final WebDriver driver;
 
     public MainPage(WebDriver driver) {
@@ -21,6 +27,8 @@ public class MainPage {
         driver.get("https://www.jetbrains.com/search/?q=" + encodedText);
     }
 
+    @FindBy(css = "[data-test='main-menu-item-action']")
+    public WebElement toolsMenu;
     public void openDeveloperToolsPage() {
         driver.get("https://www.jetbrains.com/products/");
     }
