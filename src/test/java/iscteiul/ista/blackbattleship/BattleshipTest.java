@@ -9,6 +9,11 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import static org.junit.jupiter.api.Assertions.*;
 import java.time.Duration;
 
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+
+import static org.junit.jupiter.api.Assertions.*;
+
 public class BattleshipTest {
     private WebDriver driver;
     private BattleshipPage battleshipPage;
@@ -17,38 +22,9 @@ public class BattleshipTest {
     public void setUp() {
         driver = new ChromeDriver();
         driver.manage().window().maximize();
-        driver.get("https://papergames.io/en/battleship");
-
-        // Nova estratégia: Procurar e clicar no botão de "Consent"
-        try {
-            // Damos até 5 segundos para o banner aparecer
-            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
-
-            // Procura um botão que contenha a palavra "Consent" (ignorando maiúsculas/minúsculas)
-            WebElement consentButton = wait.until(ExpectedConditions.elementToBeClickable(
-                    By.xpath("//button[contains(translate(., 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'consent')]")
-            ));
-
-            consentButton.click();
-            System.out.println("Sucesso: Botão de Consentimento aceite!");
-
-            // Pausa rápida para deixar a animação do banner desaparecer do ecrã
-            Thread.sleep(1000);
-
-        } catch (TimeoutException e) {
-            System.out.println("Info: Banner de consentimento não apareceu.");
-        } catch (Exception e) {
-            // Se o clique normal falhar (por vezes outras coisas sobrepõem-se), forçamos com Javascript
-            System.out.println("A tentar forçar o clique no consentimento com JS...");
-            try {
-                WebElement btn = driver.findElement(By.xpath("//button[contains(translate(., 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'consent')]"));
-                ((JavascriptExecutor) driver).executeScript("arguments[0].click();", btn);
-            } catch (Exception ex) {
-                System.out.println("Não foi possível encontrar o botão de consentimento.");
-            }
-        }
 
         battleshipPage = new BattleshipPage(driver);
+        battleshipPage.open();
     }
 
     @AfterEach
@@ -143,5 +119,59 @@ public class BattleshipTest {
         } catch (TimeoutException e) {
             fail("O botão Home foi clicado, mas a página não mudou. URL atual: " + driver.getCurrentUrl());
         }
+        driver.quit();
+    }
+
+    @Test
+    public void US01_consultarPaginaDoJogo() {
+        assertTrue(
+                battleshipPage.isBattleshipPageVisible(),
+                "URL atual: " + battleshipPage.getCurrentUrl()
+                        + " | Título atual: " + battleshipPage.getTitle()
+        );
+    }
+
+    @Test
+    public void US02_consultarRegrasDoJogo() {
+        assertTrue(
+                battleshipPage.areRulesVisible(),
+                "As regras do jogo não foram encontradas na página."
+        );
+    }
+
+    @Test
+    public void US03_jogarContraRobot() {
+        assertTrue(
+                battleshipPage.isPlayVsRobotAvailable(),
+                "O botão/opção Play vs robot não foi encontrado."
+        );
+
+        battleshipPage.clickPlayVsRobot();
+
+        assertTrue(
+                battleshipPage.getCurrentUrl().toLowerCase().contains("battleship")
+                        || battleshipPage.pageContains("robot")
+                        || battleshipPage.pageContains("Robot"),
+                "Depois de clicar em Play vs robot, a página esperada não foi carregada."
+        );
+    }
+
+    @Test
+    public void US04_jogarComUmAmigo() {
+        assertTrue(
+                battleshipPage.isPlayWithFriendAvailable(),
+                "O botão/opção Play with a friend não foi encontrado."
+        );
+
+        battleshipPage.clickPlayWithFriend();
+
+        assertTrue(
+                battleshipPage.getCurrentUrl().toLowerCase().contains("battleship")
+                        || battleshipPage.pageContains("friend")
+                        || battleshipPage.pageContains("Friend")
+                        || battleshipPage.pageContains("Invite")
+                        || battleshipPage.pageContains("invite"),
+                "Depois de clicar em Play with a friend, a página esperada não foi carregada."
+        );
     }
 }
