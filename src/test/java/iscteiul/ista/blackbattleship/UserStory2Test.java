@@ -11,49 +11,46 @@ import java.time.Duration;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class BattleshipPageTest {
+/**
+ * Page Test Class da User Story 2.
+ *
+ * Testa se o jogador consegue selecionar a opção
+ * de jogar com um amigo.
+ */
+public class UserStory2Test {
     private WebDriver driver;
-    private BattleshipPage page;
+    private UserStory2 userStory2;
 
+    /**
+     * Prepara o browser antes da execução do teste.
+     */
     @BeforeEach
     public void setUp() {
         driver = new ChromeDriver();
         driver.manage().window().maximize();
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
 
-        page = new BattleshipPage(driver);
-        page.open();
+        userStory2 = new UserStory2(driver);
+        userStory2.abrirPaginaDoJogo();
     }
 
+    /**
+     * Fecha o browser depois da execução do teste.
+     */
     @AfterEach
     public void tearDown() {
         driver.quit();
     }
 
-    @Test
-    public void UserStoryTest1_consultarInstrucoesDoJogo() {
-        assertTrue(page.isBattleshipPageVisible());
-        assertTrue(page.areRulesVisible());
-    }
-
+    /**
+     * UserStoryTest2:
+     * Como jogador, quero jogar com um amigo,
+     * para poder partilhar uma partida com outro jogador.
+     */
     @Test
     public void UserStoryTest2_jogarComUmAmigo() {
-        page.playWithFriend();
+        userStory2.escolherJogarComAmigo();
 
-        assertTrue(page.hasGameInteractionStarted());
-    }
-
-    @Test
-    public void UserStoryTest3_jogarContraRobot() {
-        page.playVsRobot();
-
-        assertTrue(page.hasGameInteractionStarted());
-    }
-
-    @Test
-    public void UserStoryTest4_criarTorneio() {
-        page.createTournament();
-
-        assertTrue(page.isTournamentPageOrDialogVisible());
+        assertTrue(userStory2.interacaoComOJogoComecou());
     }
 }
